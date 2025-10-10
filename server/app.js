@@ -47,5 +47,9 @@ await connectDB();
 
 app.use("/api/status", (req, res) => res.send("Server is Live"));
 
-const PORT = process.env.PORT || 5001;
-server.listen(PORT, () => console.log(`Server is running on Port ${PORT}`));
+if (process.env.NODE_ENV !== "production") {
+  const PORT = process.env.PORT || 5001;
+  server.listen(PORT, () => console.log(`Server is running on Port ${PORT}`));
+}
+
+export default server;
