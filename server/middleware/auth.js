@@ -6,12 +6,15 @@ export const protectRoute = async (req, res, next) => {
     const token = req.headers.token || req.headers.authorization?.split(' ')[1];
     
     if (!token) {
+      console.log("No token provided in headers:", Object.keys(req.headers));
       return res.status(401).json({ message: "No token provided" });
     }
     
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("Token decoded, userId:", decoded.userId);
 
     const user = await User.findById(decoded.userId).select("-password");
+    console.log("User found:", user ? user.fullName : "Not found");
 
     if (!user) {
       return res.status(400).json({ message: "User Not Found" });
@@ -19,9 +22,8 @@ export const protectRoute = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    console.log(error.message);
-
-    return res.status(500).json({ message: "Internal Server Error" });
+    console.log("Auth error:", error.message);
+    return res.status(500).json({ message: "Internal Server Error: " + error.message });
   }
 };
 

@@ -1,22 +1,25 @@
 import mongoose from "mongoose";
+import cloudinary from "../lib/cloudinary.js";
 
-import message from "../models/message.js";
+import Message from "../models/message.js";
 import User from "../models/user.js";
 import { io, userSocketMap } from "../app.js";
 
-const { Promise } = mongoose;
 //get all users except loggenin user
 export const getUserforSidebar = async (req, res) => {
   try {
+    console.log("Getting users for sidebar, user ID:", req.user?._id);
     const userId = req.user._id;
+    
     const filteredUsers = await User.find({ _id: { $ne: userId } }).select(
       "-password"
     );
+    console.log("Found filtered users:", filteredUsers.length);
 
     //count no of messages not seen
     const unseenMessages = {};
     const promises = filteredUsers.map(async (user) => {
-      const messages = await message.find({
+      const messages = await Message.find({
         senderId: user._id,
         receiverId: userId,
         seen: false,
@@ -26,9 +29,12 @@ export const getUserforSidebar = async (req, res) => {
       }
     });
     await Promise.all(promises);
-    return res.status(200).json({ users: filteredUsers, unseenMessages });
+    
+    console.log("Sending response with users:", filteredUsers.length, "unseen:", Object.keys(unseenMessages).length);
+    return res.status(200).json({ success: true, users: filteredUsers, unseenMessages });
   } catch (error) {
-    return res.status(500).json * { message: "Internal Server Error" };
+    console.error("Error in getUserforSidebar:", error);
+    return res.status(500).json({ success: false, message: "Internal Server Error: " + error.message });
   }
 };
 
@@ -39,26 +45,26 @@ export const getMessages = async (req, res) => {
     const { id: selectedUserId } = req.params;
     const myId = req.user._id;
 
-    const messages = await message.find({
+    const messages = await Message.find({
       $or: [
         { senderId: myId, receiverId: selectedUserId },
         { senderId: selectedUserId, receiverId: myId },
       ],
     });
-    await message.updateMany(
+    await Message.updateMany(
       { senderId: selectedUserId, receiverId: myId },
       { seen: true }
     );
-    return res.status(200).json({ messages });
+    return res.status(200).json({ success: true, messages });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
 export const markMessageasSeen = async (req, res) => {
   try {
     const { id } = req.params;
-    await message.findByIdAndUpdate(id, { seen: true });
+    await Message.findByIdAndUpdate(id, { seen: true });
     return res.status(200).json({ message: "Good" });
   } catch (error) {
     return res.status(500).json({ message: "Internal Server Error" });
@@ -76,7 +82,7 @@ export const sendMessage = async (req, res) => {
       const uploadResponse = await cloudinary.uploader.upload(image);
       imageUrl = uploadResponse.secure_url;
     }
-    const newMessage = await message.create({
+    const newMessage = await Message.create({
       senderId,
       receiverId,
       text,
@@ -87,6 +93,8 @@ export const sendMessage = async (req, res) => {
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("newMessage", newMessage);
     }
-    return res.status(200).json({ newMessage });
-  } catch (error) {}
+    return res.status(200).json({ success: true, newMessage });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
 };
