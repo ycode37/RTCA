@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { ChatContext } from "../../context/ChatContext";
 
-const Sidebar = () => {
+const Sidebar = ({ onUserSelect }) => {
   const {
     getUsers,
     users,
@@ -50,9 +50,13 @@ const Sidebar = () => {
   }, [onlineUser]);
 
   return (
-    <div className="bg-[#adb5bd] text-gray-800 h-screen w-80 flex flex-col px-6 py-8">
-      <div className="flex items-center justify-between mb-8">
-        <img src={assets.logo} alt="logo" className="w-30 cursor-pointer" />
+    <div className="bg-[#adb5bd] text-gray-800 h-full w-full md:w-64 lg:w-72 xl:w-80 flex flex-col px-4 sm:px-5 md:px-6 py-6 sm:py-7 md:py-8">
+      <div className="flex items-center justify-between mb-6 sm:mb-7 md:mb-8">
+        <img
+          src={assets.logo}
+          alt="logo"
+          className="w-24 sm:w-28 md:w-30 cursor-pointer"
+        />
         <div className="relative">
           <img
             src={assets.menu_icon}
@@ -79,13 +83,13 @@ const Sidebar = () => {
           )}
         </div>
       </div>
-      <div className="flex items-center gap-3 bg-[#495057] text-gray-300 rounded-lg px-4 py-3 shadow-sm mb-6">
-        <img src={assets.search_icon} alt="Search" className="w-5" />
+      <div className="flex items-center gap-3 bg-[#495057] text-gray-300 rounded-lg px-3 sm:px-4 py-3 shadow-sm mb-4 sm:mb-5 md:mb-6">
+        <img src={assets.search_icon} alt="Search" className="w-4 sm:w-5" />
         <input
           onChange={(e) => setInput(e.target.value)}
           type="text"
           placeholder="Search User"
-          className="outline-none bg-transparent w-full text-gray-300"
+          className="outline-none bg-transparent w-full text-gray-300 text-sm sm:text-base"
         />
       </div>
       <div className="flex-1 overflow-y-auto">
@@ -105,19 +109,25 @@ const Sidebar = () => {
                     ...prev,
                     [user._id]: 0,
                   }));
+                  // Trigger mobile view change
+                  if (onUserSelect) {
+                    onUserSelect();
+                  }
                 }}
                 key={user._id || index} // Use user._id as key instead of index
-                className={`border-b-1 flex items-center gap-4 p-4 rounded-lg cursor-pointer hover:bg-blue-100 transition-colors mb-2 ${
+                className={`border-b-1 flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg cursor-pointer hover:bg-blue-100 active:bg-blue-200 transition-colors mb-2 touch-manipulation ${
                   selectedUser?._id === user._id && "bg-violet-800"
                 }`}
               >
                 <img
                   src={user?.profilePic || assets.avatar_icon}
                   alt=""
-                  className="w-12 h-12 rounded-full object-cover"
+                  className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover"
                 />
                 <div className="flex-1">
-                  <p className="font-medium text-gray-800">{user.fullName}</p>
+                  <p className="font-medium text-gray-800 text-sm sm:text-base">
+                    {user.fullName}
+                  </p>
                   {Array.isArray(onlineUser) &&
                   onlineUser.includes(user._id) ? (
                     <span className="text-xs text-green-600">Online</span>
@@ -126,13 +136,13 @@ const Sidebar = () => {
                   )}
                 </div>
                 {unseenMessages && unseenMessages[user._id] > 0 && (
-                  <p>{unseenMessages[user._id]}</p>
+                  <p className="text-sm">{unseenMessages[user._id]}</p>
                 )}
               </div>
             );
           })
         ) : (
-          <div className="text-center text-gray-500 mt-8">
+          <div className="text-center text-gray-500 mt-8 text-sm sm:text-base">
             {input ? "No users found" : "Loading users..."}
           </div>
         )}

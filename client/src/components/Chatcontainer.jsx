@@ -5,7 +5,7 @@ import { ChatContext } from "../../context/ChatContext";
 import { AuthContext } from "../../context/AuthContext";
 import toast from "react-hot-toast";
 
-const Chatcontainer = () => {
+const Chatcontainer = ({ onBackToSidebar }) => {
   const { selectedUser, setSelectedUser, messages, sendMessage, getMessages } =
     useContext(ChatContext);
   const { authUser, onlineUser } = useContext(AuthContext);
@@ -46,38 +46,57 @@ const Chatcontainer = () => {
     }
   }, [messages]);
   return selectedUser ? (
-    <div className="flex-1 flex flex-col bg-[#495057]">
+    <div className="flex-1 flex flex-col bg-[#495057] h-full">
       {/* Add bg-black to header */}
-      <div className="flex items-center justify-between px-6 py-4 bg-[#212529] border-b border-gray-700">
-        <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between px-3 sm:px-4 md:px-6 py-3 md:py-4 bg-[#212529] border-b border-gray-700">
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Back button for mobile */}
+          <button
+            onClick={() => {
+              setSelectedUser(null);
+              if (onBackToSidebar) {
+                onBackToSidebar();
+              }
+            }}
+            className="md:hidden p-2 text-white hover:bg-gray-700 rounded-lg mr-2"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          
           <img
             src={selectedUser?.profilePic || assets.avatar_icon}
             alt=""
-            className="w-12 h-12 rounded-full object-cover"
+            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover"
           />
           {/* Change text colors for dark theme */}
-          <p className="font-medium text-white">
+          <p className="font-medium text-white text-sm sm:text-base">
             {selectedUser?.fullName} {onlineUser.includes(selectedUser._id)}{" "}
             <span className="text-xs text-green-400 ml-2">Online</span>
           </p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 sm:gap-4">
           <img
             onClick={() => setSelectedUser(null)}
             src={assets.arrow_icon}
             alt=""
-            className="w-6 cursor-pointer"
+            className="hidden md:block w-5 sm:w-6 cursor-pointer"
           />
-          <img src={assets.help_icon} alt="" className="w-6 cursor-pointer" />
+          <img
+            src={assets.help_icon}
+            alt=""
+            className="w-5 sm:w-6 cursor-pointer"
+          />
         </div>
       </div>
 
-      {/* Messages area already inherits bg-black */}
-      <div className="flex-1 overflow-y-auto p-6">
+      {/* Messages area */}
+      <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6 bg-[#495057]">
         {messages.map((msg, index) => (
           <div
             key={index}
-            className={`flex gap-2 mb-4 items-end ${
+            className={`flex gap-2 mb-3 sm:mb-4 items-end ${
               msg.senderId === authUser._id ? "justify-end" : "justify-start"
             }`}
           >
@@ -85,7 +104,7 @@ const Chatcontainer = () => {
               <img
                 src={selectedUser?.profilePic}
                 alt=""
-                className="w-8 h-8 rounded-full object-cover"
+                className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover"
               />
             )}
 
@@ -93,7 +112,7 @@ const Chatcontainer = () => {
               <img
                 src={authUser?.profilePic || assets.avatar_icon}
                 alt=""
-                className="w-8 h-8 rounded-full object-cover"
+                className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover"
               />
             )}
 
@@ -103,10 +122,14 @@ const Chatcontainer = () => {
               }`}
             >
               {msg.image ? (
-                <img src={msg.image} alt="" className="max-w-xs rounded-lg" />
+                <img
+                  src={msg.image}
+                  alt=""
+                  className="max-w-[180px] sm:max-w-[200px] md:max-w-xs rounded-lg"
+                />
               ) : (
                 <p
-                  className={`px-4 py-2 rounded-lg max-w-xs break-words ${
+                  className={`px-3 sm:px-4 py-2 rounded-lg max-w-[180px] sm:max-w-[200px] md:max-w-xs break-words text-sm sm:text-base ${
                     msg.senderId === authUser._id
                       ? "bg-violet-800 text-white"
                       : "bg-gray-700 text-white"
@@ -125,16 +148,16 @@ const Chatcontainer = () => {
         <div ref={scrollEnd}></div>
       </div>
 
-      {/* Add bg-black to input area */}
-      <div className="bg-[#212529] border-t border-gray-700 p-4">
-        <div className="flex items-center gap-3">
+      {/* Input area */}
+      <div className="bg-[#212529] border-t border-gray-700 p-3 md:p-4">
+        <div className="flex items-center gap-2 sm:gap-3">
           <input
             onChange={(e) => setInput(e.target.value)}
             value={input}
             onKeyDown={(e) => (e.key === "Enter" ? handleSendMessage(e) : null)}
             type="text"
             placeholder="Enter Your Message"
-            className="flex-1 px-4 py-2 rounded-lg bg-[#495057] text-white border border-gray-700 focus:outline-none focus:border-blue-500"
+            className="flex-1 px-3 sm:px-4 py-2 sm:py-3 rounded-lg bg-[#495057] text-white text-sm sm:text-base border border-gray-700 focus:outline-none focus:border-gray-500"
           />
           <input
             onChange={handleSendImage}
@@ -144,21 +167,27 @@ const Chatcontainer = () => {
             hidden
           />
           <label htmlFor="image" className="cursor-pointer">
-            <img src={assets.gallery_icon} alt="" className="w-6" />
+            <img src={assets.gallery_icon} alt="" className="w-5 sm:w-6" />
           </label>
           <img
             onClick={handleSendMessage}
             src={assets.send_button}
             alt=""
-            className="w-6 cursor-pointer"
+            className="w-5 sm:w-6 cursor-pointer"
           />
         </div>
       </div>
     </div>
   ) : (
-    <div className="flex-1 flex flex-col items-center justify-center bg-[#495057]">
-      <img src={assets.logo_icon} alt="" className="w-70 mb-4" />
-      <p className="text-xl text-gray-800 font-light">Chat Anytime anywhere</p>
+    <div className="flex-1 flex flex-col items-center justify-center bg-[#495057] px-4">
+      <img
+        src={assets.logo_icon}
+        alt=""
+        className="w-48 sm:w-60 md:w-70 mb-4"
+      />
+      <p className="text-lg sm:text-xl text-white font-light text-center">
+        Chat Anytime anywhere
+      </p>
     </div>
   );
 };
