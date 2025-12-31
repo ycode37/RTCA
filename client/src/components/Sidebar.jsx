@@ -151,4 +151,6 @@ const Sidebar = ({ onUserSelect }) => {
   );
 };
 
+console.log('Jio');
+
 export default Sidebar;
