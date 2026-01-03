@@ -28,5 +28,8 @@ const App = () => {
     </>
   );
 };
+console.log('Bargad');
+console.log('Stash');
+
 
 export default App;
