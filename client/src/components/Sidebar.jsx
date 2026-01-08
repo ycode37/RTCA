@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { ChatContext } from "../../context/ChatContext";
 
+console.log('Sidebar Loaded');
+
 const Sidebar = ({ onUserSelect }) => {
   const {
     getUsers,
