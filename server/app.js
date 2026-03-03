@@ -12,6 +12,24 @@ import MessageRouter from "./routes/MessageRoute.js";
 const app = express();
 const server = http.createServer(app);
 
+// CORS configuration
+const corsOptions = {
+  origin: true, // Allow all origins
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "token",
+    "X-Requested-With",
+  ],
+};
+
+app.use(cors(corsOptions));
+
+// Handle preflight requests explicitly
+app.options("*", cors(corsOptions));
+
 // Store online User
 export const userSocketMap = {};
 
@@ -45,7 +63,6 @@ if (!isServerless) {
 }
 
 app.use(express.json({ limit: "4mb" }));
-app.use(cors());
 
 app.use("/api/auth", userRouter);
 app.use("/api/messages", MessageRouter);
