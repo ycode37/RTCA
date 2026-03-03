@@ -23,117 +23,146 @@ export default function Loginpage() {
   };
 
   return (
-    <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-        * { font-family: 'Poppins', sans-serif; }
-      `}</style>
+    <div className="min-h-screen w-full flex items-center justify-center bg-[#0a0a0a] px-4">
+      {/* Subtle gold accent line at top */}
+      <div className="fixed top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#d4af37] to-transparent"></div>
 
-      <div className="min-h-screen w-full flex items-center justify-center bg-gray-950 px-4">
-        <div className="flex flex-col justify-center w-full max-w-80 rounded-xl px-6 py-8 border border-slate-700 bg-slate-900 text-white text-sm">
-          <h2 className="text-2xl font-semibold">{currState}</h2>
-          <p className="text-slate-300 mt-1">Get Started to your account</p>
-          <form className="mt-8" onSubmit={onSubmitHandler}>
+      <div className="w-full max-w-sm">
+        {/* Logo/Brand */}
+        <div className="text-center mb-10">
+          <h1 className="text-3xl font-extralight tracking-[0.3em] text-white">
+            <span className="text-[#d4af37]">CHAT</span>
+          </h1>
+          <p className="text-[#a3a3a3] text-xs mt-2 tracking-wider">
+            CONNECT SEAMLESSLY
+          </p>
+        </div>
+
+        {/* Form Card */}
+        <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-2xl p-8">
+          <h2 className="text-xl font-light text-white mb-1">
+            {currState === "Sign Up" ? "Create Account" : "Welcome Back"}
+          </h2>
+          <p className="text-[#a3a3a3] text-sm mb-8">
+            {currState === "Sign Up"
+              ? "Start your journey"
+              : "Sign in to continue"}
+          </p>
+
+          <form onSubmit={onSubmitHandler} className="space-y-5">
             {currState === "Sign Up" && !isDataSubmitted && (
               <div>
-                <label className="block mb-1 font-medium text-slate-300">
+                <label className="block text-xs text-[#a3a3a3] mb-2 uppercase tracking-wider">
                   Full Name
                 </label>
                 <input
                   onChange={(e) => setFullName(e.target.value)}
                   type="text"
-                  placeholder="Full Name"
+                  placeholder="Enter your name"
                   value={fullName}
                   required
-                  className="w-full p-2 mb-3 bg-slate-900 border border-slate-700 rounded-md focus:outline-none focus:ring-1 transition focus:ring-indigo-500 focus:border-indigo-500"
-                />
-              </div>
-            )}
-            {!isDataSubmitted && (
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block mb-1 font-medium text-slate-300"
-                >
-                  Email address
-                </label>
-                <input
-                  onChange={(e) => setEmail(e.target.value)}
-                  value={email}
-                  type="email"
-                  id="email"
-                  name="email"
-                  required
-                  placeholder="Email"
-                  className="w-full p-2 mb-3 bg-slate-900 border border-slate-700 rounded-md focus:outline-none focus:ring-1 transition focus:ring-indigo-500 focus:border-indigo-500"
-                />
-                <label
-                  htmlFor="password"
-                  className="block mb-1 font-medium text-slate-300"
-                >
-                  Password
-                </label>
-                <input
-                  onChange={(e) => setPassword(e.target.value)}
-                  value={password}
-                  type="password"
-                  id="password"
-                  name="password"
-                  required
-                  placeholder="Password"
-                  className="w-full p-2 mb-2 bg-slate-900 border border-slate-700 rounded-md focus:outline-none focus:ring-1 transition focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full px-4 py-3 bg-[#141414] border border-[#1a1a1a] rounded-lg text-white text-sm placeholder-[#a3a3a3] focus:border-[#d4af37] focus:outline-none transition-colors"
                 />
               </div>
             )}
 
-            <div className="text-right">
-              <a
-                href="#"
-                className="font-medium text-indigo-600 hover:text-indigo-500"
-              >
-                Forgot password?
-              </a>
-            </div>
+            {!isDataSubmitted && (
+              <>
+                <div>
+                  <label className="block text-xs text-[#a3a3a3] mb-2 uppercase tracking-wider">
+                    Email
+                  </label>
+                  <input
+                    onChange={(e) => setEmail(e.target.value)}
+                    value={email}
+                    type="email"
+                    required
+                    placeholder="Enter your email"
+                    className="w-full px-4 py-3 bg-[#141414] border border-[#1a1a1a] rounded-lg text-white text-sm placeholder-[#a3a3a3] focus:border-[#d4af37] focus:outline-none transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs text-[#a3a3a3] mb-2 uppercase tracking-wider">
+                    Password
+                  </label>
+                  <input
+                    onChange={(e) => setPassword(e.target.value)}
+                    value={password}
+                    type="password"
+                    required
+                    placeholder="Enter your password"
+                    className="w-full px-4 py-3 bg-[#141414] border border-[#1a1a1a] rounded-lg text-white text-sm placeholder-[#a3a3a3] focus:border-[#d4af37] focus:outline-none transition-colors"
+                  />
+                </div>
+
+                {currState === "Login" && (
+                  <div className="text-right">
+                    <a
+                      href="#"
+                      className="text-xs text-[#d4af37] hover:text-[#f0d77f] transition-colors"
+                    >
+                      Forgot password?
+                    </a>
+                  </div>
+                )}
+              </>
+            )}
+
             <button
               type="submit"
-              className="w-full mt-10 px-4 py-2.5 font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full py-3.5 bg-[#d4af37] text-black font-medium rounded-lg hover:bg-[#f0d77f] transition-colors text-sm tracking-wide"
             >
-              {currState === "Sign Up" ? "Get Started" : "Login"}
+              {currState === "Sign Up" ? "Get Started" : "Sign In"}
             </button>
-            <div className="mt-4 text-center">
-              {currState === "Sign Up" ? (
-                <p className="text-slate-400">
-                  Already Have an account{" "}
-                  <span
-                    onClick={() => {
-                      setCurrState("Login");
-                      setIsDataSubmitted(false);
-                      setFullName("");
-                    }}
-                    className="text-indigo-500 cursor-pointer hover:underline"
-                  >
-                    Login Here
-                  </span>
-                </p>
-              ) : (
-                <p className="text-slate-400">
-                  Create an Account{" "}
-                  <span
-                    onClick={() => {
-                      setCurrState("Sign Up");
-                      setIsDataSubmitted(false);
-                      setFullName("");
-                    }}
-                    className="text-indigo-500 cursor-pointer hover:underline"
-                  >
-                    Click Here
-                  </span>
-                </p>
-              )}
-            </div>
           </form>
+
+          {/* Divider */}
+          <div className="flex items-center gap-4 my-8">
+            <div className="flex-1 h-[1px] bg-[#1a1a1a]"></div>
+            <span className="text-xs text-[#a3a3a3]">OR</span>
+            <div className="flex-1 h-[1px] bg-[#1a1a1a]"></div>
+          </div>
+
+          {/* Toggle State */}
+          <p className="text-center text-sm text-[#a3a3a3]">
+            {currState === "Sign Up" ? (
+              <>
+                Already have an account?{" "}
+                <button
+                  onClick={() => {
+                    setCurrState("Login");
+                    setIsDataSubmitted(false);
+                    setFullName("");
+                  }}
+                  className="text-[#d4af37] hover:text-[#f0d77f] transition-colors"
+                >
+                  Sign in
+                </button>
+              </>
+            ) : (
+              <>
+                Don't have an account?{" "}
+                <button
+                  onClick={() => {
+                    setCurrState("Sign Up");
+                    setIsDataSubmitted(false);
+                    setFullName("");
+                  }}
+                  className="text-[#d4af37] hover:text-[#f0d77f] transition-colors"
+                >
+                  Create one
+                </button>
+              </>
+            )}
+          </p>
         </div>
+
+        {/* Footer */}
+        <p className="text-center text-[#a3a3a3] text-xs mt-8 tracking-wider">
+          © 2026 CHAT. All rights reserved.
+        </p>
       </div>
-    </>
+    </div>
   );
 }

@@ -45,11 +45,15 @@ const Chatcontainer = ({ onBackToSidebar }) => {
       scrollEnd.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
+
+  const isOnline =
+    Array.isArray(onlineUser) && onlineUser.includes(selectedUser?._id);
+
   return selectedUser ? (
-    <div className="flex-1 flex flex-col bg-[#495057] h-full">
-      {/* Add bg-black to header */}
-      <div className="flex items-center justify-between px-3 sm:px-4 md:px-6 py-3 md:py-4 bg-[#212529] border-b border-gray-700">
-        <div className="flex items-center gap-2 sm:gap-3">
+    <div className="flex-1 flex flex-col bg-[#0a0a0a] h-full">
+      {/* Header */}
+      <div className="flex items-center justify-between px-6 py-4 bg-[#0a0a0a] border-b border-[#1a1a1a]">
+        <div className="flex items-center gap-4">
           {/* Back button for mobile */}
           <button
             onClick={() => {
@@ -58,106 +62,134 @@ const Chatcontainer = ({ onBackToSidebar }) => {
                 onBackToSidebar();
               }
             }}
-            className="md:hidden p-2 text-white hover:bg-gray-700 rounded-lg mr-2"
+            className="md:hidden p-2 text-[#a3a3a3] hover:text-[#d4af37] hover:bg-[#1a1a1a] rounded-lg transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
           </button>
-          
-          <img
-            src={selectedUser?.profilePic || assets.avatar_icon}
-            alt=""
-            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover"
-          />
-          {/* Change text colors for dark theme */}
-          <p className="font-medium text-white text-sm sm:text-base">
-            {selectedUser?.fullName} {onlineUser.includes(selectedUser._id)}{" "}
-            <span className="text-xs text-green-400 ml-2">Online</span>
-          </p>
+
+          <div className="relative">
+            <img
+              src={selectedUser?.profilePic || assets.avatar_icon}
+              alt=""
+              className="w-11 h-11 rounded-full object-cover border border-[#1a1a1a]"
+            />
+            {isOnline && (
+              <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#d4af37] rounded-full border-2 border-[#0a0a0a]"></span>
+            )}
+          </div>
+          <div>
+            <p className="font-medium text-white text-sm">
+              {selectedUser?.fullName}
+            </p>
+            <p className="text-xs text-[#a3a3a3]">
+              {isOnline ? "Active now" : "Offline"}
+            </p>
+          </div>
         </div>
-        <div className="flex items-center gap-3 sm:gap-4">
-          <img
+        <div className="flex items-center gap-2">
+          <button
             onClick={() => setSelectedUser(null)}
-            src={assets.arrow_icon}
-            alt=""
-            className="hidden md:block w-5 sm:w-6 cursor-pointer"
-          />
-          <img
-            src={assets.help_icon}
-            alt=""
-            className="w-5 sm:w-6 cursor-pointer"
-          />
+            className="hidden md:flex p-2 text-[#a3a3a3] hover:text-[#d4af37] hover:bg-[#1a1a1a] rounded-lg transition-colors"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
         </div>
       </div>
 
       {/* Messages area */}
-      <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6 bg-[#495057]">
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`flex gap-2 mb-3 sm:mb-4 items-end ${
-              msg.senderId === authUser._id ? "justify-end" : "justify-start"
-            }`}
-          >
-            {msg.senderId !== authUser._id && (
-              <img
-                src={selectedUser?.profilePic}
-                alt=""
-                className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover"
-              />
-            )}
-
-            {msg.senderId === authUser._id && (
-              <img
-                src={authUser?.profilePic || assets.avatar_icon}
-                alt=""
-                className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover"
-              />
-            )}
-
+      <div className="flex-1 overflow-y-auto px-6 py-6 bg-[#0a0a0a]">
+        {messages.map((msg, index) => {
+          const isSent = msg.senderId === authUser._id;
+          return (
             <div
-              className={`flex flex-col ${
-                msg.senderId === authUser._id ? "items-end" : "items-start"
+              key={index}
+              className={`flex gap-3 mb-6 items-end ${
+                isSent ? "justify-end" : "justify-start"
               }`}
             >
-              {msg.image ? (
+              {!isSent && (
                 <img
-                  src={msg.image}
+                  src={selectedUser?.profilePic || assets.avatar_icon}
                   alt=""
-                  className="max-w-[180px] sm:max-w-[200px] md:max-w-xs rounded-lg"
+                  className="w-8 h-8 rounded-full object-cover border border-[#1a1a1a]"
                 />
-              ) : (
-                <p
-                  className={`px-3 sm:px-4 py-2 rounded-lg max-w-[180px] sm:max-w-[200px] md:max-w-xs break-words text-sm sm:text-base ${
-                    msg.senderId === authUser._id
-                      ? "bg-violet-800 text-white"
-                      : "bg-gray-700 text-white"
-                  }`}
-                >
-                  {msg.text}
-                </p>
               )}
 
-              <p className="text-xs text-gray-400 mt-1">
-                {formatmessageTime(msg.createdAt)}
-              </p>
+              <div
+                className={`flex flex-col max-w-[70%] ${
+                  isSent ? "items-end" : "items-start"
+                }`}
+              >
+                {msg.image ? (
+                  <img
+                    src={msg.image}
+                    alt=""
+                    className="max-w-[280px] rounded-2xl border border-[#1a1a1a]"
+                  />
+                ) : (
+                  <p
+                    className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${
+                      isSent
+                        ? "bg-[#d4af37] text-black rounded-br-md"
+                        : "bg-[#141414] text-white border border-[#1a1a1a] rounded-bl-md"
+                    }`}
+                  >
+                    {msg.text}
+                  </p>
+                )}
+
+                <p className="text-[10px] text-[#a3a3a3] mt-1.5 px-1">
+                  {formatmessageTime(msg.createdAt)}
+                </p>
+              </div>
+
+              {isSent && (
+                <img
+                  src={authUser?.profilePic || assets.avatar_icon}
+                  alt=""
+                  className="w-8 h-8 rounded-full object-cover border border-[#1a1a1a]"
+                />
+              )}
             </div>
-          </div>
-        ))}
+          );
+        })}
         <div ref={scrollEnd}></div>
       </div>
 
       {/* Input area */}
-      <div className="bg-[#212529] border-t border-gray-700 p-3 md:p-4">
-        <div className="flex items-center gap-2 sm:gap-3">
+      <div className="bg-[#0a0a0a] border-t border-[#1a1a1a] p-4">
+        <div className="flex items-center gap-3 bg-[#141414] border border-[#1a1a1a] rounded-2xl px-4 py-3">
           <input
             onChange={(e) => setInput(e.target.value)}
             value={input}
             onKeyDown={(e) => (e.key === "Enter" ? handleSendMessage(e) : null)}
             type="text"
-            placeholder="Enter Your Message"
-            className="flex-1 px-3 sm:px-4 py-2 sm:py-3 rounded-lg bg-[#495057] text-white text-sm sm:text-base border border-gray-700 focus:outline-none focus:border-gray-500"
+            placeholder="Type a message..."
+            className="flex-1 bg-transparent text-white text-sm placeholder-[#a3a3a3] outline-none"
           />
           <input
             onChange={handleSendImage}
@@ -166,28 +198,68 @@ const Chatcontainer = ({ onBackToSidebar }) => {
             accept="image/png, image/jpeg"
             hidden
           />
-          <label htmlFor="image" className="cursor-pointer">
-            <img src={assets.gallery_icon} alt="" className="w-5 sm:w-6" />
+          <label
+            htmlFor="image"
+            className="cursor-pointer p-2 text-[#a3a3a3] hover:text-[#d4af37] transition-colors"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
           </label>
-          <img
+          <button
             onClick={handleSendMessage}
-            src={assets.send_button}
-            alt=""
-            className="w-5 sm:w-6 cursor-pointer"
-          />
+            className="p-2 bg-[#d4af37] text-black rounded-full hover:bg-[#f0d77f] transition-colors"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+              />
+            </svg>
+          </button>
         </div>
       </div>
     </div>
   ) : (
-    <div className="flex-1 flex flex-col items-center justify-center bg-[#495057] px-4">
-      <img
-        src={assets.logo_icon}
-        alt=""
-        className="w-48 sm:w-60 md:w-70 mb-4"
-      />
-      <p className="text-lg sm:text-xl text-white font-light text-center">
-        Chat Anytime anywhere
-      </p>
+    <div className="flex-1 flex flex-col items-center justify-center bg-[#0a0a0a] px-4">
+      <div className="text-center">
+        <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-[#141414] border border-[#1a1a1a] flex items-center justify-center">
+          <svg
+            className="w-10 h-10 text-[#d4af37]"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1}
+              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+            />
+          </svg>
+        </div>
+        <h2 className="text-xl font-light text-white mb-2">Welcome</h2>
+        <p className="text-sm text-[#a3a3a3]">
+          Select a conversation to start messaging
+        </p>
+      </div>
     </div>
   );
 };

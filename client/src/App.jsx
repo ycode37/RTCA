@@ -10,7 +10,31 @@ const App = () => {
   const { authUser } = useContext(AuthContext);
   return (
     <>
-      <Toaster />
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: "#141414",
+            color: "#ffffff",
+            border: "1px solid #1a1a1a",
+            borderRadius: "8px",
+            fontSize: "14px",
+          },
+          success: {
+            iconTheme: {
+              primary: "#d4af37",
+              secondary: "#0a0a0a",
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: "#ef4444",
+              secondary: "#0a0a0a",
+            },
+          },
+        }}
+      />
       <Routes>
         <Route
           path="/"

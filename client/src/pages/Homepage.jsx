@@ -18,7 +18,10 @@ const Homepage = () => {
   };
 
   return (
-    <div className="h-screen overflow-hidden">
+    <div className="h-screen overflow-hidden bg-[#0a0a0a]">
+      {/* Subtle gold accent line at top */}
+      <div className="fixed top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#d4af37] to-transparent z-50"></div>
+
       {/* Mobile Layout */}
       <div className="md:hidden h-full">
         {showChatOnMobile && selectedUser ? (
@@ -27,7 +30,7 @@ const Homepage = () => {
           <Sidebar onUserSelect={handleUserSelect} />
         )}
       </div>
-      
+
       {/* Desktop Layout */}
       <div className="hidden md:flex h-full">
         <Sidebar onUserSelect={handleUserSelect} />

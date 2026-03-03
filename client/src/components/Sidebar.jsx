@@ -20,9 +20,7 @@ const Sidebar = ({ onUserSelect }) => {
   const [input, setInput] = useState("");
 
   const filteredUsers = React.useMemo(() => {
-    // Ensure users is an array and input is a string
     if (!Array.isArray(users)) {
-      console.log("Users is not an array:", users);
       return [];
     }
 
@@ -32,16 +30,14 @@ const Sidebar = ({ onUserSelect }) => {
 
     try {
       return users.filter((user) => {
-        // Check if user and user.fullName exist
         if (!user || !user.fullName) {
-          console.log("Invalid user object:", user);
           return false;
         }
         return user.fullName.toLowerCase().includes(input.toLowerCase());
       });
     } catch (error) {
       console.error("Error filtering users:", error);
-      return users; // Return original users if filtering fails
+      return users;
     }
   }, [users, input]);
 
@@ -50,56 +46,90 @@ const Sidebar = ({ onUserSelect }) => {
   }, [onlineUser]);
 
   return (
-    <div className="bg-[#adb5bd] text-gray-800 h-full w-full md:w-64 lg:w-72 xl:w-80 flex flex-col px-4 sm:px-5 md:px-6 py-6 sm:py-7 md:py-8">
-      <div className="flex items-center justify-between mb-6 sm:mb-7 md:mb-8">
-        <img
-          src={assets.logo}
-          alt="logo"
-          className="w-24 sm:w-28 md:w-30 cursor-pointer"
-        />
+    <div className="bg-[#0a0a0a] text-white h-full w-full md:w-72 lg:w-80 xl:w-96 flex flex-col border-r border-[#1a1a1a]">
+      {/* Header */}
+      <div className="flex items-center justify-between px-6 py-5 border-b border-[#1a1a1a]">
+        <h1 className="text-xl font-light tracking-wider">
+          <span className="text-[#d4af37]">CHAT</span>
+        </h1>
         <div className="relative">
-          <img
-            src={assets.menu_icon}
-            alt=""
-            className="w-5 cursor-pointer"
+          <button
             onClick={() => setShowMenu(!showMenu)}
-          />
+            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#1a1a1a] transition-colors"
+          >
+            <svg
+              className="w-5 h-5 text-[#a3a3a3]"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <circle cx="12" cy="6" r="2" />
+              <circle cx="12" cy="12" r="2" />
+              <circle cx="12" cy="18" r="2" />
+            </svg>
+          </button>
           {showMenu && (
-            <div className="absolute right-0 top-12 bg-[#495057] text-gray-300 rounded-lg shadow-xl flex flex-col w-40 p-2 z-10">
-              <p
-                onClick={() => navigate("/profile")}
-                className="cursor-pointer hover:bg-gray-700 px-4 py-3 rounded text-sm"
+            <div className="absolute right-0 top-12 bg-[#141414] border border-[#1a1a1a] rounded-lg shadow-2xl flex flex-col w-44 py-2 z-50">
+              <button
+                onClick={() => {
+                  navigate("/profile");
+                  setShowMenu(false);
+                }}
+                className="text-left px-4 py-3 text-sm text-[#e5e5e5] hover:bg-[#1a1a1a] hover:text-[#d4af37] transition-colors"
               >
-                edit profile
-              </p>
-              <hr className="my-1" />
-              <p
-                onClick={() => logout()}
-                className="cursor-pointer hover:bg-gray-700 px-4 py-3 rounded text-sm"
+                Edit Profile
+              </button>
+              <div className="mx-4 border-t border-[#1a1a1a]"></div>
+              <button
+                onClick={() => {
+                  logout();
+                  setShowMenu(false);
+                }}
+                className="text-left px-4 py-3 text-sm text-[#e5e5e5] hover:bg-[#1a1a1a] hover:text-[#d4af37] transition-colors"
               >
-                logout
-              </p>
+                Logout
+              </button>
             </div>
           )}
         </div>
       </div>
-      <div className="flex items-center gap-3 bg-[#495057] text-gray-300 rounded-lg px-3 sm:px-4 py-3 shadow-sm mb-4 sm:mb-5 md:mb-6">
-        <img src={assets.search_icon} alt="Search" className="w-4 sm:w-5" />
-        <input
-          onChange={(e) => setInput(e.target.value)}
-          type="text"
-          placeholder="Search User"
-          className="outline-none bg-transparent w-full text-gray-300 text-sm sm:text-base"
-        />
+
+      {/* Search */}
+      <div className="px-4 py-4">
+        <div className="flex items-center gap-3 bg-[#141414] border border-[#1a1a1a] rounded-lg px-4 py-3">
+          <svg
+            className="w-4 h-4 text-[#a3a3a3]"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+          <input
+            onChange={(e) => setInput(e.target.value)}
+            type="text"
+            placeholder="Search conversations..."
+            className="outline-none bg-transparent w-full text-sm text-white placeholder-[#a3a3a3]"
+          />
+        </div>
       </div>
-      <div className="flex-1 overflow-y-auto">
+
+      {/* Users List */}
+      <div className="flex-1 overflow-y-auto px-2">
         {filteredUsers && filteredUsers.length > 0 ? (
           filteredUsers.map((user, index) => {
-            // Skip rendering if user is invalid
             if (!user || !user._id || !user.fullName) {
-              console.warn("Skipping invalid user:", user);
               return null;
             }
+
+            const isSelected = selectedUser?._id === user._id;
+            const isOnline =
+              Array.isArray(onlineUser) && onlineUser.includes(user._id);
+            const hasUnread = unseenMessages && unseenMessages[user._id] > 0;
 
             return (
               <div
@@ -109,48 +139,66 @@ const Sidebar = ({ onUserSelect }) => {
                     ...prev,
                     [user._id]: 0,
                   }));
-                  // Trigger mobile view change
                   if (onUserSelect) {
                     onUserSelect();
                   }
                 }}
-                key={user._id || index} // Use user._id as key instead of index
-                className={`border-b-1 flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg cursor-pointer hover:bg-blue-100 active:bg-blue-200 transition-colors mb-2 touch-manipulation ${
-                  selectedUser?._id === user._id && "bg-violet-800"
+                key={user._id || index}
+                className={`flex items-center gap-4 px-4 py-4 mx-2 rounded-lg cursor-pointer transition-all duration-200 mb-1 ${
+                  isSelected
+                    ? "bg-[#1a1a1a] border-l-2 border-[#d4af37]"
+                    : "hover:bg-[#141414] border-l-2 border-transparent"
                 }`}
               >
-                <img
-                  src={user?.profilePic || assets.avatar_icon}
-                  alt=""
-                  className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover"
-                />
-                <div className="flex-1">
-                  <p className="font-medium text-gray-800 text-sm sm:text-base">
-                    {user.fullName}
-                  </p>
-                  {Array.isArray(onlineUser) &&
-                  onlineUser.includes(user._id) ? (
-                    <span className="text-xs text-green-600">Online</span>
-                  ) : (
-                    <span className="text-xs text-gray-400">Offline</span>
+                <div className="relative">
+                  <img
+                    src={user?.profilePic || assets.avatar_icon}
+                    alt=""
+                    className="w-12 h-12 rounded-full object-cover border border-[#1a1a1a]"
+                  />
+                  {isOnline && (
+                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#d4af37] rounded-full border-2 border-[#0a0a0a]"></span>
                   )}
                 </div>
-                {unseenMessages && unseenMessages[user._id] > 0 && (
-                  <p className="text-sm">{unseenMessages[user._id]}</p>
+                <div className="flex-1 min-w-0">
+                  <p
+                    className={`font-medium text-sm truncate ${isSelected ? "text-[#d4af37]" : "text-white"}`}
+                  >
+                    {user.fullName}
+                  </p>
+                  <p className="text-xs text-[#a3a3a3] mt-0.5">
+                    {isOnline ? "Active now" : "Offline"}
+                  </p>
+                </div>
+                {hasUnread && (
+                  <span className="min-w-[20px] h-5 flex items-center justify-center bg-[#d4af37] text-black text-xs font-medium rounded-full px-1.5">
+                    {unseenMessages[user._id]}
+                  </span>
                 )}
               </div>
             );
           })
         ) : (
-          <div className="text-center text-gray-500 mt-8 text-sm sm:text-base">
-            {input ? "No users found" : "Loading users..."}
+          <div className="flex flex-col items-center justify-center h-40 text-[#a3a3a3]">
+            <svg
+              className="w-12 h-12 mb-3 text-[#1a1a1a]"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1}
+                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+              />
+            </svg>
+            <p className="text-sm">{input ? "No users found" : "Loading..."}</p>
           </div>
         )}
       </div>
     </div>
   );
 };
-
-console.log('Jio');
 
 export default Sidebar;

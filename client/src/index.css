@@ -1,13 +1,71 @@
-@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
 @import "tailwindcss";
 
-* {
-  font-family: "Outfit", sans-serif;
+:root {
+  --black: #0a0a0a;
+  --black-light: #141414;
+  --black-lighter: #1a1a1a;
+  --white: #ffffff;
+  --white-muted: #e5e5e5;
+  --white-dim: #a3a3a3;
+  --gold: #d4af37;
+  --gold-light: #f0d77f;
+  --gold-dark: #b8960c;
 }
+
+* {
+  font-family: "Inter", sans-serif;
+  box-sizing: border-box;
+}
+
 body {
-  background-color: #2c3e50;
+  background-color: var(--black);
+  color: var(--white);
 }
 
 ::-webkit-scrollbar {
-  display: none;
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--black-light);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gold);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold-light);
+}
+
+/* Minimalist focus styles */
+input:focus,
+button:focus {
+  outline: none;
+  box-shadow: 0 0 0 1px var(--gold);
+}
+
+/* Gold accent animations */
+@keyframes goldPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.gold-pulse {
+  animation: goldPulse 2s ease-in-out infinite;
+}
+
+/* Smooth transitions globally */
+* {
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
 }
