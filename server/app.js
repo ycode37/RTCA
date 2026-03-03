@@ -27,8 +27,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// Handle preflight requests explicitly
-app.options("*", cors(corsOptions));
+
 
 // Store online User
 export const userSocketMap = {};
@@ -73,7 +72,7 @@ connectDB();
 app.use("/api/status", (req, res) => res.send("Server is Live"));
 
 // socket.io endpoint handler for serverless - returns error message
-app.all("/socket.io/*", (req, res) => {
+app.use("/socket.io", (req, res) => {
   res.status(503).json({
     error: "WebSocket not supported",
     message:
