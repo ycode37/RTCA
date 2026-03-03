@@ -24,7 +24,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.log(
         "Auth check failed:",
-        error.response?.data?.message || error.message
+        error.response?.data?.message || error.message,
       );
       // Don't show toast error for auth check failures
       localStorage.removeItem("token");
@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }) => {
       console.log("Login error:", error);
       toast.error(
         error.response?.data?.message ||
-          "An error occurred during authentication"
+          "An error occurred during authentication",
       );
     }
   };
@@ -62,7 +62,9 @@ export const AuthProvider = ({ children }) => {
     setOnlineUser([]);
     axios.defaults.headers.common["token"] = null;
     toast.success("Logged Out SuccessFully");
-    socket.disconnect();
+    if (socket) {
+      socket.disconnect();
+    }
   };
 
   const updateProfile = async (body) => {
@@ -83,7 +85,24 @@ export const AuthProvider = ({ children }) => {
       query: {
         userId: userData._id,
       },
+      // Limit reconnection attempts and use websocket only
+      reconnectionAttempts: 3,
+      reconnectionDelay: 1000,
+      timeout: 10000,
+      transports: ["websocket", "polling"],
     });
+
+    newSocket.on("connect_error", (error) => {
+      console.log(
+        "Socket connection failed - real-time features unavailable:",
+        error.message,
+      );
+      // Stop trying to reconnect after initial failures
+      if (newSocket.io.opts.reconnectionAttempts <= 0) {
+        newSocket.disconnect();
+      }
+    });
+
     newSocket.connect();
     setSocket(newSocket);
     newSocket.on("getOnlineUsers", (userIds) => {

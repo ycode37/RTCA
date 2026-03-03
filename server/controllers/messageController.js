@@ -10,9 +10,9 @@ export const getUserforSidebar = async (req, res) => {
   try {
     console.log("Getting users for sidebar, user ID:", req.user?._id);
     const userId = req.user._id;
-    
+
     const filteredUsers = await User.find({ _id: { $ne: userId } }).select(
-      "-password"
+      "-password",
     );
     console.log("Found filtered users:", filteredUsers.length);
 
@@ -29,12 +29,24 @@ export const getUserforSidebar = async (req, res) => {
       }
     });
     await Promise.all(promises);
-    
-    console.log("Sending response with users:", filteredUsers.length, "unseen:", Object.keys(unseenMessages).length);
-    return res.status(200).json({ success: true, users: filteredUsers, unseenMessages });
+
+    console.log(
+      "Sending response with users:",
+      filteredUsers.length,
+      "unseen:",
+      Object.keys(unseenMessages).length,
+    );
+    return res
+      .status(200)
+      .json({ success: true, users: filteredUsers, unseenMessages });
   } catch (error) {
     console.error("Error in getUserforSidebar:", error);
-    return res.status(500).json({ success: false, message: "Internal Server Error: " + error.message });
+    return res
+      .status(500)
+      .json({
+        success: false,
+        message: "Internal Server Error: " + error.message,
+      });
   }
 };
 
@@ -53,7 +65,7 @@ export const getMessages = async (req, res) => {
     });
     await Message.updateMany(
       { senderId: selectedUserId, receiverId: myId },
-      { seen: true }
+      { seen: true },
     );
     return res.status(200).json({ success: true, messages });
   } catch (error) {
@@ -89,12 +101,18 @@ export const sendMessage = async (req, res) => {
       image: imageUrl,
     });
 
-    const receiverSocketId = userSocketMap[receiverId];
-    if (receiverSocketId) {
-      io.to(receiverSocketId).emit("newMessage", newMessage);
+    // Only emit via socket if io is available (non-serverless environment)
+    if (io) {
+      const receiverSocketId = userSocketMap[receiverId];
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("newMessage", newMessage);
+      }
     }
     return res.status(200).json({ success: true, newMessage });
   } catch (error) {
-    return res.status(500).json({ success: false, message: "Internal Server Error" });
+    console.error("Error in sendMessage:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
   }
 };
