@@ -264,4 +264,9 @@ const Chatcontainer = ({ onBackToSidebar }) => {
   );
 };
 
+console.log('Hello');
+console.log('Hello');
+
+
+
 export default Chatcontainer;
